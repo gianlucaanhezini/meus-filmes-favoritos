@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Filmes Favoritos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300..700&display=swap" rel="stylesheet">
+    <style>
+        /* ===== DESIGN TOKENS ===== */
+        :root, [data-theme="light"] {
+            --color-bg: #f7f6f2;
+            --color-surface: #f9f8f5;
+            --color-surface-2: #fbfbf9;
+            --color-surface-offset: #f3f0ec;
+            --color-border: #d4d1ca;
+            --color-text: #28251d;
+            --color-text-muted: #7a7974;
+            --color-text-faint: #bab9b4;
+            --color-text-inverse: #f9f8f4;
+            --color-primary: #01696f;
+            --color-primary-hover: #0c4e54;
+            --shadow-sm: 0 1px 2px rgba(30,28,20,0.06);
+            --shadow-md: 0 4px 12px rgba(30,28,20,0.08);
+            --shadow-lg: 0 12px 32px rgba(30,28,20,0.12);
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-full: 9999px;
+            --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem;
+            --space-4: 1rem; --space-6: 1.5rem; --space-8: 2rem;
+            --space-10: 2.5rem; --space-12: 3rem; --space-16: 4rem;
+            --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+            --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+            --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+            --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+            --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+            --text-2xl: clamp(2rem, 1.2rem + 2.5vw, 3.5rem);
+            --text-hero: clamp(3rem, 0.5rem + 7vw, 8rem);
+            --font-display: 'Bebas Neue', 'Georgia', serif;
+            --font-body: 'Inter', 'Helvetica Neue', sans-serif;
+            --transition-interactive: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* ===== TEMA ESCURO (padrão) ===== */
+        [data-theme="dark"] {
+            --color-bg: #0f0e0d;
+            --color-surface: #171614;
+            --color-surface-2: #1c1b19;
+            --color-surface-offset: #22211f;
+            --color-border: #2d2c2a;
+            --color-text: #cdccca;
+            --color-text-muted: #797876;
+            --color-text-faint: #5a5957;
+            --color-text-inverse: #2b2a28;
+            --color-primary: #4f98a3;
+            --color-primary-hover: #227f8b;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.25);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.35);
+            --shadow-lg: 0 12px 32px rgba(0,0,0,0.5);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme]) {
+                --color-bg: #0f0e0d; --color-surface: #171614;
+                --color-surface-2: #1c1b19; --color-surface-offset: #22211f;
+                --color-border: #2d2c2a; --color-text: #cdccca;
+                --color-text-muted: #797876; --color-text-faint: #5a5957;
+                --color-primary: #4f98a3; --color-primary-hover: #227f8b;
+                --shadow-sm: 0 1px 2px rgba(0,0,0,0.25);
+                --shadow-md: 0 4px 12px rgba(0,0,0,0.35);
+                --shadow-lg: 0 12px 32px rgba(0,0,0,0.5);
+            }
+        }
+
+        /* ===== BASE ===== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; scroll-padding-top: var(--space-16); }
+        body { min-height: 100vh; line-height: 1.6; font-family: var(--font-body); font-size: var(--text-base); color: var(--color-text); background-color: var(--color-bg); }
+        img { display: block; max-width: 100%; height: auto; }
+        h1, h2, h3 { line-height: 1.1; font-family: var(--font-display); letter-spacing: 0.02em; }
+        p { line-height: 1.75; }
+        a { transition: color var(--transition-interactive); text-decoration: none; color: inherit; }
+
+        /* ===== LAYOUT ===== */
+        .container { max-width: 1100px; margin-inline: auto; padding-inline: var(--space-6); }
+
+        /* ===== CABEÇALHO ===== */
+        .site-header {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(15,14,13,0.85);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(205,204,202,0.08);
+            padding-block: var(--space-4);
+        }
+        [data-theme="light"] .site-header {
+            background: rgba(247,246,242,0.85);
+        }
+        .header-inner { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); }
+        .logo { display: flex; align-items: center; gap: var(--space-3); color: var(--color-text); }
+        .logo svg { flex-shrink: 0; }
+        .logo-text { font-family: var(--font-display); font-size: var(--text-lg); letter-spacing: 0.05em; line-height: 1; }
+        .logo-sub { font-size: var(--text-xs); color: var(--color-text-muted); font-family: var(--font-body); letter-spacing: 0.08em; text-transform: uppercase; }
+
+        /* ===== SEÇÃO HERO ===== */
+        .hero {
+            padding-block: clamp(3rem, 8vw, 4rem);
+            text-align: center;
+            position: relative; overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(79,152,163,0.12), transparent 70%);
+            pointer-events: none;
+        }
+        .hero-eyebrow {
+            display: inline-flex; align-items: center; gap: var(--space-2);
+            font-size: var(--text-xs); color: var(--color-primary);
+            text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600;
+            margin-bottom: var(--space-4);
+        }
+        .hero-eyebrow::before, .hero-eyebrow::after { content: '—'; opacity: 0.5; }
+        .hero h1 { font-size: var(--text-hero); color: var(--color-text); margin-bottom: var(--space-4); }
+        .hero p { font-size: var(--text-base); color: var(--color-text-muted); max-width: 48ch; margin-inline: auto; }
+
+        /* ===== GRADE DE FILMES ===== */
+        .films-section { padding-block: clamp(2.5rem, 6vw, 4rem); }
+        .films-grid { display: grid; gap: var(--space-8); }
+
+        /* ===== CARD DE FILME ===== */
+        .film-card {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            background: var(--color-surface);
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(205,204,202,0.08);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            transition: transform var(--transition-interactive), box-shadow var(--transition-interactive);
+        }
+        .film-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+
+        .film-poster {
+            position: relative; overflow: hidden;
+            background: var(--color-surface-offset);
+        }
+        .film-poster img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .film-card:hover .film-poster img { transform: scale(1.04); }
+
+        /* Número do filme sobre o poster */
+        .film-number {
+            position: absolute; top: var(--space-3); left: var(--space-3);
+            width: 36px; height: 36px; border-radius: var(--radius-full);
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-display); font-size: var(--text-lg); color: #fff; line-height: 1;
+        }
+
+        /* Badge de avaliação (estrela) */
+        .film-rating-badge {
+            position: absolute; bottom: var(--space-3); right: var(--space-3);
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+            border-radius: var(--radius-full); padding: var(--space-1) var(--space-3);
+            display: flex; align-items: center; gap: var(--space-1);
+            font-size: var(--text-xs); color: #facc15; font-weight: 700;
+        }
+
+        .film-body { padding: var(--space-8); display: flex; flex-direction: column; gap: var(--space-5); }
+
+        .film-meta { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2); }
+
+        /* Badges genéricos e de destaque */
+        .badge {
+            display: inline-flex; align-items: center;
+            font-size: var(--text-xs); font-weight: 500;
+            padding: 3px var(--space-3); border-radius: var(--radius-full);
+            border: 1px solid rgba(205,204,202,0.12);
+            color: var(--color-text-muted); background: var(--color-surface-2);
+            text-transform: uppercase; letter-spacing: 0.06em;
+        }
+        .badge-accent {
+            background: rgba(79,152,163,0.12);
+            color: var(--color-primary);
+            border-color: rgba(79,152,163,0.25);
+        }
+
+        .film-title { font-size: var(--text-2xl); color: var(--color-text); }
+        .film-desc { font-size: var(--text-sm); color: var(--color-text-muted); max-width: 60ch; }
+
+        /* ===== SEÇÃO DE ELENCO ===== */
+        .actors-label {
+            font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.1em;
+            color: var(--color-text-faint); font-weight: 600; margin-bottom: var(--space-3);
+        }
+        .actors-list { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+        /* Chip de ator com avatar e nome */
+        .actor-chip {
+            display: flex; align-items: center; gap: var(--space-2);
+            background: var(--color-surface-2);
+            border: 1px solid rgba(205,204,202,0.08);
+            border-radius: var(--radius-full);
+            padding: var(--space-2) var(--space-3);
+        }
+        .actor-avatar {
+            width: 28px; height: 28px; border-radius: var(--radius-full);
+            background: var(--color-surface-offset);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 600; color: var(--color-primary);
+            flex-shrink: 0;
+        }
+        .actor-name { font-size: var(--text-xs); font-weight: 600; color: var(--color-text); line-height: 1.2; }
+        .actor-role { font-size: 10px; color: var(--color-text-faint); line-height: 1.2; }
+
+        /* ===== RODAPÉ ===== */
+        .site-footer {
+            padding-block: var(--space-8);
+            border-top: 1px solid rgba(205,204,202,0.08);
+            text-align: center;
+            color: var(--color-text-faint);
+            font-size: var(--text-xs);
+        }
+
+        /* ===== RESPONSIVIDADE ===== */
+        @media (max-width: 768px) {
+            .film-card { grid-template-columns: 1fr; }
+            .film-poster { aspect-ratio: 3/4; max-height: 320px; }
+            .film-poster img { max-height: 320px; }
+            .film-body { padding: var(--space-6); }
+            .film-title { font-size: var(--text-xl); }
+        }
+        @media (max-width: 480px) {
+            .hero h1 { font-size: clamp(3rem, 14vw, 6rem); }
+            .actor-chip { padding: var(--space-1) var(--space-2); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===================== CABEÇALHO DO SITE ===================== -->
+<header class="site-header">
+    <div class="container">
+        <div class="header-inner">
+            <!-- Logo e título -->
+            <a href="#" class="logo" aria-label="Meus Filmes Favoritos">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                    <rect width="32" height="32" rx="8" fill="var(--color-primary)" opacity="0.15"/>
+                    <rect x="6" y="10" width="20" height="14" rx="2" stroke="var(--color-primary)" stroke-width="1.5" fill="none"/>
+                    <circle cx="16" cy="17" r="3" fill="var(--color-primary)"/>
+                    <path d="M6 14h20M10 10V8M22 10V8" stroke="var(--color-primary)" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <div>
+                    <div class="logo-text">CineList</div>
+                    <div class="logo-sub">Meus Favoritos</div>
+                </div>
+            </a>
+        </div>
+    </div>
+</header>
+
+<!-- ===================== SEÇÃO HERO (DESTAQUE PRINCIPAL) ===================== -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-eyebrow">Top 3 Filmes</div>
+        <h1>MEUS FAVORITOS</h1>
+        <p>Uma seleção pessoal dos filmes que marcaram minha vida — aventura, herói e magia em cada cena.</p>
+    </div>
+</section>
+
+<!-- ===================== LISTA DE FILMES ===================== -->
+<section class="films-section">
+    <div class="container">
+        <div class="films-grid">
+
+            <!-- ===== FILME 1: Harry Potter ===== -->
+            <article class="film-card">
+                <!-- Poster com número e avaliação -->
+                <div class="film-poster">
+                    <img
+                        src="https://upload.wikimedia.org/wikipedia/en/e/e9/Harry_Potter_and_the_Philosopher%27s_Stone_Book_Cover.jpg"
+                        alt="Poster de Harry Potter e a Pedra Filosofal"
+                        width="260"
+                        height="400"
+                        loading="eager"
+                    >
+                    <div class="film-number">1</div>
+                    <div class="film-rating-badge">★ 7.6</div>
+                </div>
+                <!-- Informações do filme -->
+                <div class="film-body">
+                    <div class="film-meta">
+                        <span class="badge badge-accent">✨ Fantasia / Aventura</span>
+                        <span class="badge">2001</span>
+                        <span class="badge">⏱ 152 min</span>
+                    </div>
+                    <h2 class="film-title">Harry Potter e a Pedra Filosofal</h2>
+                    <p class="film-desc">Harry Potter descobre que é um bruxo no dia do seu 11º aniversário e é convidado para estudar na Escola de Magia e Bruxaria de Hogwarts. Lá, ele faz novos amigos, aprende sobre o mundo mágico e descobre a verdade sobre a morte de seus pais, enfrentando o temível Lorde Voldemort.</p>
+                    <!-- Elenco principal -->
+                    <div class="actors-section">
+                        <div class="actors-label">Elenco Principal</div>
+                        <div class="actors-list">
+                            <div class="actor-chip">
+                                <div class="actor-avatar">D</div>
+                                <div>
+                                    <div class="actor-name">Daniel Radcliffe</div>
+                                    <div class="actor-role">Harry Potter</div>
+                                </div>
+                            </div>
+                            <div class="actor-chip">
+                                <div class="actor-avatar">E</div>
+                                <div>
+                                    <div class="actor-name">Emma Watson</div>
+                                    <div class="actor-role">Hermione Granger</div>
+                                </div>
+                            </div>
+                            <div class="actor-chip">
+                                <div class="actor-avatar">R</div>
+                                <div>
+                                    <div class="actor-name">Rupert Grint</div>
+                                    <div class="actor-role">Ron Weasley</div>
+                                </div>
+                            </div>
+                            <div class="actor-chip">
+                                <div class="actor-avatar">R</div>
+                                <div>
+                                    <div class="actor-name">Richard Harris</div>
+                                    <div class="actor-role">Dumbledore</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ===== FILME 2: Capitão América ===== -->
+            <article class="film-card">
+                <!-- Poster com número e avaliação -->
+                <div class="film-poster">
+                    <img
+                        src="https://upload.wikimedia.org/wikipedia/en/3/37/Captain_America_The_First_Avenger_poster.jpg"
+                        alt="Poster de Capitão América: O Primeiro Vingador"
+                        width="260"
+                        height="400"
+                        loading="lazy"
+                    >
+                    <div class="film-number">2</div>
+                    <div class="film-rating-badge">★ 6.9</div>
+                </div>
+                <!-- Informações do filme -->
+                <div class="film-body">
+                    <div class="film-meta">
+                        <span class="badge badge-accent">🛡️ Ação / Ficção Científica</span>
+                        <span class="badge">2011</span>
+                        <span class="badge">⏱ 124 min</span>
+                    </div>
+                    <h2 class="film-title">Capitão América: O Primeiro Vingador</h2>
+                    <p class="film-desc">Steve Rogers, um jovem magro de Brooklyn que tenta incansavelmente servir ao exército na Segunda Guerra Mundial, é transformado em um super-soldado pelo soro de serum. Munido de seu icônico escudo, ele se torna o Capitão América e enfrenta a organização nazista HYDRA liderada pelo temível Caveira Vermelha.</p>
+                    <!-- Elenco principal -->
+                    <div class="actors-section">
+                        <div class="actors-label">Elenco Principal</div>
+                        <div class="actors-list">
+                            <div class="actor-chip">
+                                <div class="actor-avatar">C</div>
+                                <div>
+                                    <div class="actor-name">Chris Evans</div>
+                                    <div class="actor-role">Steve Rogers / Capitão América</div>
+                                </div>
+                            </div>
+                            <div class="actor-chip">
+                                <div class="actor-avatar">H</div>
+                                <div>
+                                    <div class="actor-name">Hayley Atwell</div>
+                                    <div class="actor-role">Peggy Carter</div>
+                                </div>
+                            </div>
+                            <div class="actor-chip">
+                                <div class="actor-avatar">S</div>
+                                <div>
+                                    <div class="actor-name">Sebastian Stan</div>
+                                    <div class="actor-role">Bucky Barnes</div>
+                                </div>
+                            </div>
+                            <div class="actor-chip">
+                                <div class="actor-avatar">H</div>
+                                <div>
+                                    <div class="actor-name">Hugo Weaving</div>
+                                    <div class="actor-role">Caveira Vermelha</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ===== FILME 3: Homem-Aranha ===== -->
+            <article class="film-card">
+                <!-- Poster com número e avaliação -->
+                <div class="film-poster">
+                    <img
+                        src="https://upload.wikimedia.org/wikipedia/en/2/2d/Spider-Man_Into_the_Spider-Verse_poster.png"
+                        alt="Poster de Homem-Aranha: No Aranhaverso"
+                        width="260"
+                        height="400"
+                        loading="lazy"
+                    >
+                    <div class="film-number">3</div>
+                    <div class="film-rating-badge">★ 8.4</div>
+                </div>
+                <!-- Informações do filme -->
+                <div class="film-body">
+                    <div class="film-meta">
+                        <span class="badge badge-accent">🕷️ Animação / Ação</span>
+                        <span class="badge">2018</span>
+                        <span class="badge">⏱ 117 min</span>
+                    </div>
+                    <h2 class="film-title">Homem-Aranha: No Aranhaverso</h2>
+                    <p class="film-desc">Miles Morales se torna o Homem-Aranha de sua realidade e deve se unir a outros Homens-Aranha de universos paralelos para deter uma ameaça que pode destruir todos os mundos. Uma jornada sobre identidade, responsabilidade e o que significa ser um herói — seja quem for, de onde vier.</p>
+                    <!-- Elenco principal -->
+                    <div class="actors-section">
+                        <div class="actors-label">Elenco Principal</div>
+                        <div class="actors-list">
+                            <div class="actor-chip">
+                                <div class="actor-avatar">S</div>
+                                <div>
+                                    <div class="actor-name">Shameik Moore</div>
+                                    <div class="actor-role">Miles Morales</div>
+                                </div>
+                            </div>
+                            <div class="actor-chip">
+                                <div class="actor-avatar">H</div>
+                                <div>
+                                    <div class="actor-name">Hailee Steinfeld</div>
+                                    <div class="actor-role">Gwen Stacy</div>
+                                </div>
+                            </div>
+                            <div class="actor-chip">
+                                <div class="actor-avatar">M</div>
+                                <div>
+                                    <div class="actor-name">Mahershala Ali</div>
+                                    <div class="actor-role">Tio Aaron</div>
+                                </div>
+                            </div>
+                            <div class="actor-chip">
+                                <div class="actor-avatar">J</div>
+                                <div>
+                                    <div class="actor-name">Jake Johnson</div>
+                                    <div class="actor-role">Peter B. Parker</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+        </div>
+    </div>
+</section>
+
+<!-- ===================== RODAPÉ ===================== -->
+<footer class="site-footer">
+    <div class="container">
+        <p>Feito com ❤️ por Gianluca · 2025 · CineList</p>
+    </div>
+</footer>
+
+</body>
+</html>
