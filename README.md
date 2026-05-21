@@ -72,7 +72,7 @@ O layout se adapta automaticamente:
 
 ## 👨‍💻 Autor
 
-**Gianluca Anhezini**
+**Gianluca Anhezini e**
 **Pablo Rodrigues**
 Curso de Sistemas de Informação
 Disciplina: Desenvolvimento Web
